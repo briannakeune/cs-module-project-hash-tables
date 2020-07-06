@@ -2,6 +2,7 @@ class HashTableEntry:
     """
     Linked List hash table key/value pair
     """
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -21,100 +22,75 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        # Your code here
+        if capacity < 8:
+            self.capacity = MIN_CAPACITY
+        else:
+            self.capacity = capacity
 
-
-    def get_num_slots(self):
         """
         Return the length of the list you're using to hold the hash
         table data. (Not the number of items stored in the hash table,
         but the number of slots in the main list.)
-
-        One of the tests relies on this.
-
-        Implement this.
         """
-        # Your code here
 
+    def get_num_slots(self):
+        return self.capacity
 
+    # Return the load factor for this hash table.
     def get_load_factor(self):
-        """
-        Return the load factor for this hash table.
+        pass
 
-        Implement this.
-        """
-        # Your code here
-
-
+    # FNV-1 Hash, 64-bit
     def fnv1(self, key):
-        """
-        FNV-1 Hash, 64-bit
+        pass
 
-        Implement this, and/or DJB2.
-        """
-
-        # Your code here
-
-
+    # DJB2 hash, 32-bit
     def djb2(self, key):
-        """
-        DJB2 hash, 32-bit
+        pass
 
-        Implement this, and/or FNV-1.
-        """
-        # Your code here
-
-
-    def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
         between within the storage capacity of the hash table.
         """
-        #return self.fnv1(key) % self.capacity
+
+    def hash_index(self, key):
+        # return self.fnv1(key) % self.capacity
         return self.djb2(key) % self.capacity
 
-    def put(self, key, value):
         """
         Store the value with the given key.
 
         Hash collisions should be handled with Linked List Chaining.
-
-        Implement this.
         """
-        # Your code here
 
+    def put(self, key, value):
+        pass
 
-    def delete(self, key):
         """
         Remove the value stored with the given key.
 
         Print a warning if the key is not found.
-
-        Implement this.
         """
-        # Your code here
 
+    def delete(self, key):
+        pass
 
-    def get(self, key):
         """
         Retrieve the value stored with the given key.
 
         Returns None if the key is not found.
-
-        Implement this.
         """
-        # Your code here
 
+    def get(self, key):
+        pass
 
-    def resize(self, new_capacity):
         """
         Changes the capacity of the hash table and
         rehashes all key/value pairs.
-
-        Implement this.
         """
-        # Your code here
 
+    def resize(self, new_capacity):
+        pass
 
 
 if __name__ == "__main__":
