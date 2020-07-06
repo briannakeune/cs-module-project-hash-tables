@@ -22,10 +22,8 @@ class HashTable:
     """
 
     def __init__(self, capacity):
-        if capacity < 8:
-            self.capacity = MIN_CAPACITY
-        else:
-            self.capacity = capacity
+        self.capacity = capacity if capacity >= MIN_CAPACITY else MIN_CAPACITY
+        self.table = [None] * self.capacity
 
         """
         Return the length of the list you're using to hold the hash
@@ -42,11 +40,17 @@ class HashTable:
 
     # FNV-1 Hash, 64-bit
     def fnv1(self, key):
+        # pseudo code source -- https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
         pass
 
     # DJB2 hash, 32-bit
     def djb2(self, key):
-        pass
+        # pseudo code source -- http://www.cse.yorku.ca/~oz/hash.html
+        hash = 5381
+
+        for letter_val in key.encode():
+            hash = (hash * 33) + letter_val
+        return hash
 
         """
         Take an arbitrary key and return a valid integer index
@@ -64,7 +68,8 @@ class HashTable:
         """
 
     def put(self, key, value):
-        pass
+        hashed_index = self.hash_index(key)
+        self.table[hashed_index] = value
 
         """
         Remove the value stored with the given key.
@@ -73,7 +78,14 @@ class HashTable:
         """
 
     def delete(self, key):
-        pass
+        hashed_index = self.hash_index(key)
+
+        try:
+            if self.table[hashed_index] is not None:
+                self.table[hashed_index] = None
+            return
+        except ValueError:
+            print('***WARNING***\nThat key does not exist in this hash table.')
 
         """
         Retrieve the value stored with the given key.
@@ -82,7 +94,12 @@ class HashTable:
         """
 
     def get(self, key):
-        pass
+        hashed_index = self.hash_index(key)
+
+        try:
+            return self.table[hashed_index]
+        except:
+            return None
 
         """
         Changes the capacity of the hash table and
