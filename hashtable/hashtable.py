@@ -25,11 +25,11 @@ class HashTable:
         self.capacity = capacity if capacity >= MIN_CAPACITY else MIN_CAPACITY
         self.table = [None] * self.capacity
 
-        """
-        Return the length of the list you're using to hold the hash
-        table data. (Not the number of items stored in the hash table,
-        but the number of slots in the main list.)
-        """
+    """
+    Return the length of the list you're using to hold the hash
+    table data. (Not the number of items stored in the hash table,
+    but the number of slots in the main list.)
+    """
 
     def get_num_slots(self):
         return self.capacity
@@ -41,7 +41,16 @@ class HashTable:
     # FNV-1 Hash, 64-bit
     def fnv1(self, key):
         # pseudo code source -- https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-        pass
+        # and to learn more about the XOR operator source
+        # https://kite.com/python/answers/how-to-use-the-xor-operator-in-python
+        FNV_offset_basis = 0xcbf29ce484222325
+        FNV_prime = 0x100000001b3
+
+        hash = FNV_offset_basis
+        for letter_val in key.encode():
+            hash *= FNV_prime
+            hash ^= letter_val
+        return hash
 
     # DJB2 hash, 32-bit
     def djb2(self, key):
@@ -52,30 +61,30 @@ class HashTable:
             hash = (hash * 33) + letter_val
         return hash
 
-        """
-        Take an arbitrary key and return a valid integer index
-        between within the storage capacity of the hash table.
-        """
+    """
+    Take an arbitrary key and return a valid integer index
+    between within the storage capacity of the hash table.
+    """
 
     def hash_index(self, key):
-        # return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        # return self.djb2(key) % self.capacity
 
-        """
-        Store the value with the given key.
+    """
+    Store the value with the given key.
 
-        Hash collisions should be handled with Linked List Chaining.
-        """
+    Hash collisions should be handled with Linked List Chaining.
+    """
 
     def put(self, key, value):
         hashed_index = self.hash_index(key)
         self.table[hashed_index] = value
 
-        """
-        Remove the value stored with the given key.
+    """
+    Remove the value stored with the given key.
 
-        Print a warning if the key is not found.
-        """
+    Print a warning if the key is not found.
+    """
 
     def delete(self, key):
         hashed_index = self.hash_index(key)
@@ -87,11 +96,10 @@ class HashTable:
         except ValueError:
             print('***WARNING***\nThat key does not exist in this hash table.')
 
-        """
-        Retrieve the value stored with the given key.
-
-        Returns None if the key is not found.
-        """
+    """
+    Retrieve the value stored with the given key.
+    Returns None if the key is not found.
+    """
 
     def get(self, key):
         hashed_index = self.hash_index(key)
@@ -101,10 +109,10 @@ class HashTable:
         except:
             return None
 
-        """
-        Changes the capacity of the hash table and
-        rehashes all key/value pairs.
-        """
+    """
+    Changes the capacity of the hash table and
+    rehashes all key/value pairs.
+    """
 
     def resize(self, new_capacity):
         pass
