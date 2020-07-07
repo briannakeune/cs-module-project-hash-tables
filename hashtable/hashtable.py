@@ -1,4 +1,4 @@
-class Node:
+class HashTableNode:
     def __init__(self, key=None, value=None, next_node=None):
         self.key = key
         self.value = value
@@ -27,7 +27,7 @@ class LinkedList:
 
     def add_to_head(self, key, value):
         self.length += 1
-        new_node = Node(key, value)
+        new_node = HashTableNode(key, value)
         prev_head = self.head
         self.head = new_node
         self.head.set_next(prev_head)
