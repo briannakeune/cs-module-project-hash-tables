@@ -36,6 +36,7 @@ class LinkedList:
         cur = self.head
         if cur.key == key:
             self.head = self.head.next_node
+            self.length -= 1
             return cur.value
 
         prev = cur
@@ -46,6 +47,7 @@ class LinkedList:
             if cur.key == key:
                 prev.set_next(cur.next_node)
                 # then return the deleted value
+                self.length -= 1
                 return cur
             prev = prev.next_node
             cur = cur.next_node
@@ -77,6 +79,9 @@ class LinkedList:
 
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
+MIN_LOAD_FACTOR = 0.2
+MAX_LOAD_FACTOR = 0.7
+RESIZE_FACTOR = 2
 
 
 class HashTable:
@@ -152,11 +157,11 @@ class HashTable:
                 return
         # if not found,
         # make a new HashTableEntry and add it to the list
-        # TODO
-        # check if 0.2 < load factor < 0.7
-        # then resize to
-        # 8 if it is > 0.2, or double the current capacity if < 0.7
+        self.stored_amount += 1
         linked_list.add_to_head(key, value)
+        load_factor = self.get_load_factor()
+        if load_factor > MAX_LOAD_FACTOR:
+            self.resize(self.capacity * RESIZE_FACTOR)
 
     """
     Remove the value stored with the given key.
@@ -170,6 +175,13 @@ class HashTable:
 
         try:
             linkedlist.delete(key)
+            self.stored_amount -= 1
+            load_factor = self.get_load_factor()
+            if load_factor < MIN_LOAD_FACTOR:
+                if self.capacity/RESIZE_FACTOR < MIN_CAPACITY:
+                    self.resize(MIN_CAPACITY)
+                else:
+                    self.resize(self.capacity/RESIZE_FACTOR)
         except ValueError:
             print('***WARNING***\nThat key does not exist in this hash table.')
             return None
@@ -189,7 +201,21 @@ class HashTable:
     """
 
     def resize(self, new_capacity):
-        pass
+        # create a new hash table
+        new_ht = HashTable(int(new_capacity))
+        # rehash all key/value pairs
+        # loop through ht
+        for linkedlist in self.table:
+            if linkedlist.head is not None:
+                # loop through the linked list if self.head is not none
+                for node in linkedlist:
+                    key = node.key
+                    value = node.value
+                    # put the key/value pairs into the new ht
+                    new_ht.put(key, value)
+
+        # update self to new hash table values
+        self.capacity, self.table, self.stored_amount = new_ht.capacity, new_ht.table, new_ht.stored_amount
 
 
 if __name__ == "__main__":
