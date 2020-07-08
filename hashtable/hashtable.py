@@ -33,24 +33,24 @@ class LinkedList:
         self.head.set_next(prev_head)
 
     def delete(self, key):
-        cur = self.head
-        if cur.key == key:
+        current = self.head
+        if current.key == key:
             self.head = self.head.next_node
             self.length -= 1
-            return cur.value
+            return current.value
 
-        prev = cur
-        cur = cur.next_node
+        prev = current
+        current = current.next_node
         # search linked list
-        while cur is not None:
+        while current is not None:
             # if found, delete it from the linked list,
-            if cur.key == key:
-                prev.set_next(cur.next_node)
+            if current.key == key:
+                prev.set_next(current.next_node)
                 # then return the deleted value
                 self.length -= 1
-                return cur
+                return current
             prev = prev.next_node
-            cur = cur.next_node
+            current = current.next_node
         raise Exception
 
     def contains(self, key):
