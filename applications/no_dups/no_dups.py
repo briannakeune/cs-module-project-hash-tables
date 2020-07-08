@@ -1,22 +1,20 @@
 import re
-'''
-Input: a string of words separated by spaces. Only the letters a-z are utilized.
-
-Output: the string in the same order, but with subsequent duplicate words removed.
-
-There must be no extra spaces at the end of your returned string.
-
-The solution must be O(n).
-'''
 
 
 def no_dups(s):
-    cache = []
+    cache = {}
+    no_dups_string = ''
     words = s.split()
     for index, word in enumerate(words):
+        if cache == {}:
+            cache[word] = word
+            no_dups_string += word
+
         if word not in cache:
-            cache.append(word)
-    return ' '.join(cache)
+            cache[word] = word
+            no_dups_string += ' ' + word
+
+    return no_dups_string
 
 
 if __name__ == "__main__":
