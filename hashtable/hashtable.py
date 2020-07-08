@@ -1,120 +1,221 @@
-class HashTableEntry:
-    """
-    Linked List hash table key/value pair
-    """
-    def __init__(self, key, value):
+class HashTableNode:
+    def __init__(self, key=None, value=None, next_node=None):
         self.key = key
         self.value = value
-        self.next = None
+        self.next_node = next_node
+
+    def get_key(self):
+        return self.get_key
+
+    def get_value(self):
+        return self.get_value
+
+    def get_next_node(self):
+        return self.get_next_node
+
+    def set_next(self, new_next):
+        self.next_node = new_next
+
+    def __str__(self):
+        return f'Key[{key}], value[{value}]'
+
+
+class LinkedList:
+    def __init__(self, head=None):
+        self.head = head
+        self.length = 0
+
+    def add_to_head(self, key, value):
+        self.length += 1
+        new_node = HashTableNode(key, value)
+        prev_head = self.head
+        self.head = new_node
+        self.head.set_next(prev_head)
+
+    def delete(self, key):
+        current = self.head
+        if current.key == key:
+            self.head = self.head.next_node
+            self.length -= 1
+            return current.value
+
+        prev = current
+        current = current.next_node
+        # search linked list
+        while current is not None:
+            # if found, delete it from the linked list,
+            if current.key == key:
+                prev.set_next(current.next_node)
+                # then return the deleted value
+                self.length -= 1
+                return current
+            prev = prev.next_node
+            current = current.next_node
+        raise Exception
+
+    def contains(self, key):
+        for i in self:
+            if i.key == key:
+                return i.value
+        return None
+
+    def __len__(self):
+        return self.length
+
+    def get_max(self):
+        if not self.head:
+            return None
+        if len(self) is 0:
+            return None
+        sorted_ll = sorted([i.value for i in self])
+        return sorted_ll[-1]
+
+    def __iter__(self):
+        current = self.head
+        while current is not None:
+            yield current
+            current = current.next_node
 
 
 # Hash table can't have fewer than this many slots
 MIN_CAPACITY = 8
+MIN_LOAD_FACTOR = 0.2
+MAX_LOAD_FACTOR = 0.7
+RESIZE_FACTOR = 2
 
 
 class HashTable:
     """
     A hash table that with `capacity` buckets
     that accepts string keys
-
-    Implement this.
     """
 
     def __init__(self, capacity):
-        # Your code here
+        self.capacity = capacity if capacity >= MIN_CAPACITY else MIN_CAPACITY
+        self.table = [LinkedList()] * self.capacity
+        self.stored_amount = 0
 
+    """
+    Return the length of the list you're using to hold the hash
+    table data. (Not the number of items stored in the hash table,
+    but the number of slots in the main list.)
+    """
 
     def get_num_slots(self):
-        """
-        Return the length of the list you're using to hold the hash
-        table data. (Not the number of items stored in the hash table,
-        but the number of slots in the main list.)
+        return self.capacity
 
-        One of the tests relies on this.
-
-        Implement this.
-        """
-        # Your code here
-
-
+    # Return the load factor for this hash table.
     def get_load_factor(self):
-        """
-        Return the load factor for this hash table.
+        if self.stored_amount is 0:
+            return 0
+        return self.stored_amount/self.capacity
 
-        Implement this.
-        """
-        # Your code here
-
-
+    # FNV-1 Hash, 64-bit
     def fnv1(self, key):
-        """
-        FNV-1 Hash, 64-bit
+        # pseudo code source -- https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+        # and to learn more about the XOR operator source
+        # https://kite.com/python/answers/how-to-use-the-xor-operator-in-python
+        FNV_offset_basis = 0xcbf29ce484222325
+        FNV_prime = 0x100000001b3
 
-        Implement this, and/or DJB2.
-        """
+        hash = FNV_offset_basis
+        for letter_val in key.encode():
+            hash *= FNV_prime
+            hash ^= letter_val
+        return hash
 
-        # Your code here
-
-
+    # DJB2 hash, 32-bit
     def djb2(self, key):
-        """
-        DJB2 hash, 32-bit
+        # pseudo code source -- http://www.cse.yorku.ca/~oz/hash.html
+        hash = 5381
 
-        Implement this, and/or FNV-1.
-        """
-        # Your code here
+        for letter_val in key.encode():
+            hash = (hash * 33) + letter_val
+        return hash
 
+    """
+    Take an arbitrary key and return a valid integer index
+    between within the storage capacity of the hash table.
+    """
 
     def hash_index(self, key):
-        """
-        Take an arbitrary key and return a valid integer index
-        between within the storage capacity of the hash table.
-        """
-        #return self.fnv1(key) % self.capacity
-        return self.djb2(key) % self.capacity
+        return self.fnv1(key) % self.capacity
+        # return self.djb2(key) % self.capacity
+
+    """
+    Store the value with the given key.
+    """
 
     def put(self, key, value):
-        """
-        Store the value with the given key.
+        hashed_index = self.hash_index(key)
+        linked_list = self.table[hashed_index]
+        # search for key in linked list
+        for i in linked_list:
+            # if found, update it
+            if i.key == key:
+                i.value = value
+                return
+        # if not found,
+        # make a new HashTableEntry and add it to the list
+        self.stored_amount += 1
+        linked_list.add_to_head(key, value)
+        load_factor = self.get_load_factor()
+        if load_factor > MAX_LOAD_FACTOR:
+            self.resize(self.capacity * RESIZE_FACTOR)
 
-        Hash collisions should be handled with Linked List Chaining.
+    """
+    Remove the value stored with the given key.
 
-        Implement this.
-        """
-        # Your code here
-
+    Print a warning if the key is not found.
+    """
 
     def delete(self, key):
-        """
-        Remove the value stored with the given key.
+        hashed_index = self.hash_index(key)
+        linkedlist = self.table[hashed_index]
 
-        Print a warning if the key is not found.
+        try:
+            linkedlist.delete(key)
+            self.stored_amount -= 1
+            load_factor = self.get_load_factor()
+            if load_factor < MIN_LOAD_FACTOR:
+                if self.capacity/RESIZE_FACTOR < MIN_CAPACITY:
+                    self.resize(MIN_CAPACITY)
+                else:
+                    self.resize(self.capacity/RESIZE_FACTOR)
+        except ValueError:
+            print('***WARNING***\nThat key does not exist in this hash table.')
+            return None
 
-        Implement this.
-        """
-        # Your code here
-
+    """
+    Retrieve the value stored with the given key.
+    Returns None if the key is not found.
+    """
 
     def get(self, key):
-        """
-        Retrieve the value stored with the given key.
+        hashed_index = self.hash_index(key)
+        return self.table[hashed_index].contains(key)
 
-        Returns None if the key is not found.
-
-        Implement this.
-        """
-        # Your code here
-
+    """
+    Changes the capacity of the hash table and
+    rehashes all key/value pairs.
+    """
 
     def resize(self, new_capacity):
-        """
-        Changes the capacity of the hash table and
-        rehashes all key/value pairs.
+        # create a new hash table
+        new_ht = HashTable(int(new_capacity))
+        # rehash all key/value pairs
+        # loop through ht
+        for linkedlist in self.table:
+            if linkedlist.head is not None:
+                # loop through the linked list if self.head is not none
+                for node in linkedlist:
+                    key = node.key
+                    value = node.value
+                    # put the key/value pairs into the new ht
+                    new_ht.put(key, value)
 
-        Implement this.
-        """
-        # Your code here
-
+        # update self to new hash table values
+        self.capacity, self.table, self.stored_amount = new_ht.capacity, new_ht.table, new_ht.stored_amount
 
 
 if __name__ == "__main__":
